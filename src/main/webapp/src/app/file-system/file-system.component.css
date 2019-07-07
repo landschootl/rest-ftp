@@ -1,0 +1,33 @@
+.breadcrumb {
+  background-color: #ffc7b9;
+  font-size: 1.4em;
+}
+
+.breadcrumb a {
+  color: #595959;
+}
+
+.table {
+  margin-top: 10px;
+}
+
+.table th {
+  background-color: #ff516a;
+  text-align: center;
+  font-size: 1.5em;
+  color: white;
+}
+
+.icon-file {
+  font-size: 1.5em;
+  text-align: center;
+}
+
+.move-parent {
+  background-color: #e8e8e8;
+  font-size: 1.2em;
+}
+
+.actions {
+  text-align: right;
+}

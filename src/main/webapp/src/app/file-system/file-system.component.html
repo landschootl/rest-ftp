@@ -1,0 +1,124 @@
+<h3>
+  Système de fichiers
+</h3>
+<ol class="breadcrumb">
+  <li (click)="changePositionPath(-1)"><a href="#">racine</a></li>
+  <li *ngFor="let name of _paths; let i = index; let end = last" (click)="changePositionPath(i)"><a href="#">{{name}}</a></li>
+</ol>
+<div class="btn-group pull-right" role="group">
+  <button type="button" class="btn btn-warning" title="coller le fichier" [disabled]="true" *ngIf="fileMemory === null"><span>aucun fichier en mémoire </span><span class="glyphicon glyphicon-paste" aria-hidden="true"></span></button>
+  <button type="button" class="btn btn-warning" title="coller le fichier" (click)="pasteFile()" *ngIf="fileMemory !== null"><span>{{fileMemory.name}} </span><span class="glyphicon glyphicon-paste" aria-hidden="true"></span></button>
+  <button type="button" class="btn btn-default" title="charger un fichier" data-toggle="modal" data-target="#uploadFileModal"><span class="glyphicon glyphicon-file" aria-hidden="true"></span> <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+  <button type="button" class="btn btn-default" title="créer un dossier" data-toggle="modal" data-target="#createFolderModal"><span class="glyphicon glyphicon-folder-close" aria-hidden="true"></span> <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+</div>
+<div class="form-inline">
+  <input type="text" [(ngModel)]="searchChaineFilter" id="chaineFilterInput" (keyup)="searchFiles()" class="form-control" placeholder="recherche">
+  <div class="checkbox">
+    <label>
+      <input type="checkbox" [checked]="searchRecursiveActived" (change)="changeSearchRecursive()"> Activer l'affichage récursif
+    </label>
+  </div>
+</div>
+<table class="table table-bordered table-hover">
+  <thead>
+    <tr>
+      <th></th>
+      <th>nom</th>
+      <th>taille</th>
+      <th>actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr (click)="moveToParentDirectory()" class="move-parent">
+      <td class="col-md-2"></td>
+      <td class="col-md-3"><b>..</b></td>
+      <td class="col-md-3"></td>
+      <td class="col-md-4"></td>
+    </tr>
+    <tr *ngFor="let file of _fileSystemService.allFiles$ | async">
+      <td class="col-md-2 icon-file" (click)="clickFile(file)">
+        <span *ngIf="!file.directory" class="glyphicon glyphicon-file" aria-hidden="true"></span>
+        <span *ngIf="file.directory" class="glyphicon glyphicon-folder-close" aria-hidden="true"></span>
+      </td>
+      <td class="col-md-3" (click)="clickFile(file)">{{file.name}}</td>
+      <td class="col-md-3" (click)="clickFile(file)">{{file.size}}</td>
+      <td class="col-md-4 actions">
+        <span *ngIf="!file.directory && fileMemory === file" class="label label-warning">mem</span>
+        <button *ngIf="!file.directory" type="button" class="btn btn-warning" (click)="copyFile(file)" title="copier le fichier"><span class="glyphicon glyphicon-copy" aria-hidden="true"></span></button>
+        <button *ngIf="!file.directory" type="button" class="btn btn-default" (click)="loadFile(file)" title="télécharger le fichier"><span class="glyphicon glyphicon-cloud-download" aria-hidden="true"></span></button>
+        <button *ngIf="file.directory" type="button" class="btn btn-default" title="modifier" (click)="selectFileToUpdate(file)"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></button>
+        <button type="button" class="btn btn-danger" title="supprimer" (click)="deleteFile(file)"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="modal fade" id="createFolderModal" #createFolderModal tabindex="-1" role="dialog" aria-labelledby="createFolderModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="createFolderModalLabel">Créer un dossier</h4>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <label for="nameCreateFolderInput">Nom du dossier</label>
+            <input type="text" class="form-control" id="nameCreateFolderInput" #nameCreateFolderInput placeholder="Nom du dossier">
+            <p class="help-block">Le nom doit contenir au moins 1 charactères.</p>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-primary" (click)="createFolder(nameCreateFolderInput.value)">Créer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="updateFileModal" #updateFileModal tabindex="-1" role="dialog" aria-labelledby="updateFileModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="updateFileModalLabel">Modifier un fichier</h4>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="nameUpdateFileInput">Nouveau nom du fichier</label>
+          <input type="text" [(ngModel)]="fileToUpdate.name" class="form-control" id="nameUpdateFileInput" #nameUpdateFileInput placeholder="Nouveau nom du fichier">
+          <p class="help-block">Le nom doit contenir au moins 1 charactères.</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-primary" (click)="updateFile()">Modifier</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="uploadFileModal" #uploadFileModal tabindex="-1" role="dialog" aria-labelledby="uploadFileModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="uploadFileModalLabel">Charger un dossier</h4>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <label for="fileUploadInput">Choisir un fichier</label>
+            <input type="file" (change)="prepareUpload($event)" [multiple]="true" id="fileUploadInput" #fileUploadInput placeholder="charger un fichier" accept=".pdf,.doc,.docx,.txt">
+            <p class="help-block">Seul les .pdf, .doc, .docx et les .txt sont autorisés.</p>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="uploadFile()">Charger</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,31 +1,59 @@
-# Webapp
+# Serveur rest
+####Université Lille 1 - Master Miage FA - CAR
+####Ludovic Landschoot
 
-This project was generated with [angular-cli](https://github.com/angular/angular-cli) version 1.0.0-beta.28.3.
+##Présentation
+Le but du projet est la réalisation d'un serveur rest permettant une gestion de fichier.
 
-## Development server
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+####Comment le démarrer ?
 
-## Code scaffolding
+* Exécuter la commande suivante à la racine du projet ou se trouve le pom :
+```
+mvn spring-boot:run
+```
+Info : A l'éxécution de spring boot, il se chargera de compiler et de builder la partie angular dans son dossier 'static'.
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive/pipe/service/class/module`.
+#### Comment elle fonctionne ?
 
-## Build
+Information : Au lancement de l'application, aucun dossier et fichier seront présent, il faudra les ajouter depuis l'application, ou dans le répertoire de travail par défaut : /tmp/restftp/public.
+Le chemin du répertoire de travail est modifiable via le fichier de config : "ServerConfig.java".
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
+* Démarrer le serveur.
+* (optionnel) Modifier le chemin du répertoire de travail dans le fichier "ServerConfig.java".
+* (optionnel) Ajouter des dossiers et fichiers dans se répertoire.
+    * Possibilité de le faire depuis l'application.
+* Lancer un navigateur (Chrome de préférence) et rendez-vous sur "localhost:8080".
+* Utiliser l'application !
 
-## Running unit tests
+##Architecture du projet
+```
+| src 
+    | main                      
+        | java                  
+            | config            : Ce qui concerne la configuration du serveur
+            | controller        : Possède les controllers
+            | entity            : Possède les entités manipulés
+            | exception         : Possède les exceptions
+        | ressources   
+        | webapp                : La partie front (angular) 
+```
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+##Les différentes méthodes de l'api
+Se référer à la javadoc sur les controllers.
 
-## Running end-to-end tests
+##Les différentes fonctionnalités de l'application
+* Récupérer l'ensemble des fichiers d'un répertoire.
+* Récupérer l'ensemble des fichiers et sous fichiers d'un répertoire de manière récursif.
+* Rechercher avec un filtre des fichiers ou répertoires.
+* Navigation entre les répertoires.
+* Accéder à un répertoire par une url.
+* Créer un répertoire.
+* Upload un fichier.
+* Supprimer un fichier ou un dossier.
+* Copier un fichier.
+* Renommage d'un répertoire.
+* Télécharger un fichier.
+* Gestion de message d'erreur et de notification.
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-Before running the tests make sure you are serving the app via `ng serve`.
-
-## Deploying to GitHub Pages
-
-Run `ng github-pages:deploy` to deploy to GitHub Pages.
-
-## Further help
-
-To get more help on the `angular-cli` use `ng help` or go check out the [Angular-CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+##Contact
+Pour toutes questions sur le tp --> Ludovic.isn@hotmail.fr
